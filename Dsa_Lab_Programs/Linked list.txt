@@ -1,0 +1,149 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+struct node{
+
+	int coeff;
+	int power;
+	struct node *link;
+	
+};
+
+struct node* insert(struct node *list, int coeff, int power){
+	
+	struct node *temp;
+	struct node *newNode;
+	
+	newNode = (struct node*)malloc(sizeof(struct node));
+		
+	newNode->coeff = coeff;
+	newNode->power = power;
+	newNode->link = NULL;
+	
+	if(list == NULL){
+		list = newNode;
+	}
+	
+	else {
+		temp = list;
+		
+		while(temp->link)
+			temp = temp->link;
+		
+		temp->link = newNode;
+	}
+	
+	return list;
+}
+
+void displayList(struct node *list){
+	
+	struct node* temp = list;
+	
+	while(temp){
+		if(temp->power > 1)
+			printf("%dx^%d ", temp->coeff, temp->power);
+		else if (temp->power == 1)
+			printf("%dx ", temp->coeff);
+		else
+			printf("%d", temp->coeff);
+			
+		if(temp->link != NULL)
+			printf("+ ");
+		temp = temp->link;
+	}
+	
+	printf("\n");
+}
+
+struct node* addPoly(struct node* exp1, struct node* exp2){
+	
+	struct node* finExp = NULL;
+	
+	struct node* temp1 = exp1;
+	struct node* temp2 = exp2;
+	int coeff = 0, power = 0;
+	
+	while(temp1 && temp2){
+		if(temp1->power == temp2->power){
+			coeff = temp1->coeff + temp2->coeff;
+			power = temp1->power;
+			finExp = insert(finExp, coeff, power);
+			
+			temp1 = temp1->link;
+			temp2 = temp2->link;	
+		}
+		
+		else if(temp1->power > temp2->power){
+			coeff = temp1->coeff;
+			power = temp1->power;
+			finExp = insert(finExp, coeff, power);
+			
+			temp1 = temp1->link;
+		}
+		
+		else {
+			coeff = temp2->coeff;
+			power = temp2->power;
+			finExp = insert(finExp, coeff, power);
+			
+			temp2 = temp2->link;
+		}
+
+	}
+	
+	while(temp1){
+		finExp = insert(finExp, temp1->coeff, temp1->power);
+		temp1 = temp1->link;	
+	}
+	
+	
+	while(temp2){
+		finExp = insert(finExp, temp2->coeff, temp2->power);
+		temp2 = temp2->link;	
+	}
+	
+	
+	return finExp;
+}
+
+int main(){
+
+	int coeff, power;
+	struct node* exp1;
+	struct node* exp2;
+	struct node* finExp;
+	
+	exp1 = exp2 = finExp = NULL;
+	
+	printf("Enter the first expression (powers must be in descending order): \n");
+	while(1){
+		printf("Enter coefficient:\n"); scanf("%d", &coeff);
+		printf("Enter power:\n"); scanf("%d", &power);
+		exp1 = insert(exp1, coeff, power);
+		printf("inserted\n");
+		
+		if(power == 0)
+			break;
+	}
+	
+	printf("Enter the second expression (powers must be in descending order): \n");
+	while(1){
+		printf("Enter coefficient:\n"); scanf("%d", &coeff);
+		printf("Enter power:\n"); scanf("%d", &power);
+		exp2 = insert(exp2, coeff, power);
+		
+		if(power == 0)
+			break;
+	}
+	
+	printf("Input Expressions: \n");
+	displayList(exp1);
+	displayList(exp2);
+	
+	finExp = addPoly(exp1, exp2);
+	printf("Expression after adding polynomials: \n");
+	displayList(finExp);
+	
+}
