@@ -4,7 +4,6 @@
 #include<string.h>
 
 #define SIZE 100
-
 char stack[SIZE];
 int top = -1;
 
